@@ -1,7 +1,7 @@
 variable "region" {
   description = "AWS region"
   type = string
-  default = "us-east-1"
+  default = "eu-central-1"
 }
 
 variable "vpc_cidr_block" {
@@ -29,5 +29,13 @@ variable "secret_key" {
     description = "Secret Key of AWS account"
 }
 
+variable "instance_type" {
+    default = "t1.micro"
+    type = string
+}
+
+variable "ec2_ami" {
+  default = "ami-09cb21a1e29bcebf0"
+}
 
 

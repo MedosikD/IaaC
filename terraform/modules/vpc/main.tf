@@ -1,5 +1,6 @@
 resource "aws_vpc" "project_vpc" {
     cidr_block = var.vpc_cidr_block
+    enable_dns_hostnames = true
     tags = {
         Name = "project-main-VPC"
     }
@@ -25,7 +26,7 @@ resource "aws_internet_gateway" "project_igw" {
 resource "aws_route_table" "project_route_table" {
     vpc_id = aws_vpc.project_vpc.id
     route {
-        cidr_block = "0.0.0.0/24"
+        cidr_block = "0.0.0.0/0"
         gateway_id = aws_internet_gateway.project_igw.id
     }
     tags = {
