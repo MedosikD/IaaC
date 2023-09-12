@@ -1,0 +1,48 @@
+---
+- name: Install Docker
+  hosts: all
+  become: true
+  tasks:
+    - name: Update all packages
+      dnf:
+        name: "*"
+        state: latest
+    
+    - name: Install Docker
+      dnf:
+        name: docker
+        state: present
+
+    - name: Enable and start docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Add user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: true    
+
+    - name: Reconnect to server
+      ansible.builtin.meta: reset_connection
+    
+- name: Install Docker Compose
+  hosts: all
+  tasks:
+    - name: Downloading needed package
+      shell: sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+
+    - name: Fixing permissions for the package
+      file:
+        path: /usr/local/bin/docker-compose
+        mode: +x
+
+   
+    
+    
+    
+
+
+    
