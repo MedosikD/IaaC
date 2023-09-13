@@ -11,4 +11,5 @@ module "project_ec2" {
     instance_type = var.instance_type
     project_vpc = module.project_vpc.project_vpc.id
     project_subnet = module.project_vpc.project_subnet.id
+    unsplash_key = var.unsplash_key
 }

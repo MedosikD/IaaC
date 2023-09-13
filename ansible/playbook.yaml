@@ -1,7 +1,23 @@
 ---
+- name: Wait for SSH to become available
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH
+      wait_for:
+        port: 22
+        host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+        search_regex: OpenSSH
+        delay: 10
+        timeout: 120
+      vars:
+        ansible_connection: local
+
+
 - name: Install Docker
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Update all packages
       dnf:
@@ -30,6 +46,8 @@
     
 - name: Install Docker Compose
   hosts: all
+  become: true
+  gather_facts: false
   tasks:
     - name: Downloading needed package
       shell: sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
@@ -38,6 +56,33 @@
       file:
         path: /usr/local/bin/docker-compose
         mode: +x
+
+- name: Configure application on host
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks: 
+    - name: Extract project.tar.gz archive on host
+      unarchive: 
+        src: ./files/project.tar.gz
+        dest: /home/ec2-user
+
+    - name: Set up correct IP for frontend app so it can communicate with API  # By changing line "const API_URL = 'http://127.0.0.1:5050';"  
+      lineinfile:                                                              #               to "const API_URL = 'http://ec2_ip:5050';"
+        path: /home/ec2-user/images-gallery/frontend/src/App.js 
+        regexp: "const API_URL = 'http://127.0.0.1:5050';"
+        line: "const API_URL = 'http://{{ ec2_ip }}:5050';"
+
+    - name: Set up unsplash.com account
+      template:
+        src: ./files/unsplash.env.j2
+        dest: /home/ec2-user/images-gallery/api/.env.local
+
+    - name: Build images and start containers using /usr/local/bin/docker-compose
+      # docker-compose module supports docker compose version <2.0. So it will be not working in our case. 
+      shell: "cd /home/ec2-user/images-gallery && docker-compose up -d"
+
+
 
    
     

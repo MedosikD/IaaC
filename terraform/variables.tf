@@ -38,4 +38,4 @@ variable "ec2_ami" {
   default = "ami-09cb21a1e29bcebf0"
 }
 
-
+variable "unsplash_key" {}
