@@ -6,18 +6,18 @@ variable "region" {
 
 variable "vpc_cidr_block" {
     description = "IPv4 CIDR block for VPC"
-    default = "10.0.0.0/16"
+    default = "10.10.0.0/16"
 }
 
 variable "subnet_cidr_block" {
     description = "IPv4 CIDR block fro subnet"
-    default = [ "10.10.0.0/24", "10.11.0.0/24" ]
+    default = [ "10.10.10.0/24", "10.10.11.0/24" ]
     type = list(string)
 }
 
 variable "availability_zone" {
     description = "AZs in this region to use"
-    default = ["eu-east-1a", "eu-east-1b"]
+    default = ["eu-central-1a", "eu-central-1b"]
     type = list(string)
 }
 
@@ -30,7 +30,7 @@ variable "secret_key" {
 }
 
 variable "instance_type" {
-    default = "t1.micro"
+    default = "t2.micro"
     type = string
 }
 
