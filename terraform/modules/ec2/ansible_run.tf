@@ -6,6 +6,6 @@ resource "terraform_data" "run_ansible_playbook" {
 
   provisioner "local-exec" {
     working_dir = "../ansible/"
-    command     = "ansible-playbook -i hosts playbook.yaml --extra-vars \"ansible_host=${aws_instance.project_instance.public_ip}\" --extra-vars \"unsplash_key=${var.unsplash_key}\" --extra-vars \"ec2_ip=${aws_instance.project_instance.public_ip}\""
+    command     = "ansible-playbook -i hosts playbook.yaml --extra-vars \"ansible_host=${aws_instance.project_instance.public_ip}\" --extra-vars \"unsplash_key=${var.unsplash_key}\" --extra-vars \"ec2_ip=${aws_instance.project_instance.public_ip}\" --extra-vars \"ProjectKey=${var.ssh_key_path}${var.ssh_key_name}.pem\""
   }
 }
