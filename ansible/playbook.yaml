@@ -6,13 +6,12 @@
     - name: Wait for SSH
       wait_for:
         port: 22
-        host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
         search_regex: OpenSSH
         delay: 10
         timeout: 120
       vars:
         ansible_connection: local
-
 
 - name: Install Docker
   hosts: all
@@ -23,7 +22,7 @@
       dnf:
         name: "*"
         state: latest
-    
+
     - name: Install Docker
       dnf:
         name: docker
@@ -39,11 +38,11 @@
       user:
         name: ec2-user
         groups: docker
-        append: true    
+        append: true
 
     - name: Reconnect to server
       ansible.builtin.meta: reset_connection
-    
+
 - name: Install Docker Compose
   hosts: all
   become: true
@@ -61,33 +60,23 @@
   hosts: all
   become: true
   gather_facts: false
-  tasks: 
-    - name: Extract project.tar.gz archive on host
-      unarchive: 
-        src: ./files/project.tar.gz
+  tasks:
+    - name: Copy docker-compose.yaml file to host
+      copy:
+        src: ./files/docker-compose.yml
         dest: /home/ec2-user
 
-    - name: Set up correct IP for frontend app so it can communicate with API  # By changing line "const API_URL = 'http://127.0.0.1:5050';"  
-      lineinfile:                                                              #               to "const API_URL = 'http://ec2_ip:5050';"
-        path: /home/ec2-user/images-gallery/frontend/src/App.js 
-        regexp: "const API_URL = 'http://127.0.0.1:5050';"
-        line: "const API_URL = 'http://{{ ec2_ip }}:5050';"
+    - name: Set up correct IP for frontend app so it can communicate with API # By changing line "- REACT_APP_API_HOST=http://127.0.0.1:5050" in docker-compose.yaml file
+      lineinfile:
+        path: /home/ec2-user/docker-compose.yml
+        regexp: "- REACT_APP_API_HOST=http://127.0.0.1:5050"
+        line: "     - REACT_APP_API_HOST=http://{{ ec2_ip }}:5050"
 
-    - name: Set up unsplash.com account
-      template:
-        src: ./files/unsplash.env.j2
-        dest: /home/ec2-user/images-gallery/api/.env.local
+    - name: Set up unsplash.com account # By changing line "- UNSPLASH_KEY=pass_key_here" in docker-compose.yaml file
+      lineinfile:
+        path: /home/ec2-user/docker-compose.yml
+        regexp: "- UNSPLASH_KEY=pass_key_here"
+        line: "     - UNSPLASH_KEY={{ unsplash_key }}"
 
-    - name: Build images and start containers using /usr/local/bin/docker-compose
-      # docker-compose module supports docker compose version <2.0. So it will be not working in our case. 
-      shell: "cd /home/ec2-user/images-gallery && docker-compose up -d"
-
-
-
-   
-    
-    
-    
-
-
-    
+    - name: Pull images and start containers # docker-compose module supports docker compose version <2.0. So it will be not working in our case.
+      shell: "cd /home/ec2-user/ && docker-compose up -d"

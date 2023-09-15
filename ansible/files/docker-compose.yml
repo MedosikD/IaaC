@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  frontend:
+    restart: always
+    image: medosik/frontend:2.0
+    container_name: frontend_service
+    platform: linux/amd64
+    environment:
+      - REACT_APP_API_HOST=http://127.0.0.1:5050
+    ports:
+      - '3000:3000'
+    
+  api:
+    restart: always
+    image: medosik/api:2.0
+    container_name: api_service
+    platform: linux/amd64
+    environment:
+      - UNSPLASH_KEY=pass_key_here
+    ports:
+      - '5050:5050'
+  
+
+
