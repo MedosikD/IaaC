@@ -38,10 +38,10 @@ unsplash_key = "Paste_the_Access_Key_from_Unsplash_here"
 Optional variables:
 ```
 region = "your_aws_region"
-// default - eu-central-1
+// default - "eu-central-1"
 
 vpc_cidr_block = "your_vpc_cidr_block"
-// default - 10.10.0.0/16
+// default - "10.10.0.0/16"
 
 subnet_cidr_block = ["subnet_1_cidr_block", "subnet_2_cidr_block"]
 // default - [ "10.10.10.0/24", "10.10.11.0/24" ]
@@ -50,7 +50,13 @@ availability_zone = ["your_availability_zone_1", "your_availability_zone_2"]
 // default - ["eu-central-1a", "eu-central-1b"]
 
 instance_type = "your_instance_type"
-// default - t2.micro
+// default - "t2.micro"
+
+ssh_key_name = "your_ssh_key_name"
+// default - "ProjectKey"
+
+ssh_key_path = "your_path_to_ssh_key"
+// default - "../ansible/files/"
 ```
 
 4. Run `terraform init` to initialize the Terraform environment and download the necessary provider plugins.
